@@ -1,12 +1,44 @@
 import { useState } from "react";
 
 function App() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
 
   const handlesubmit = () => {
-    console.log(username);
-    console.log(password);
+    // API endpoint for creating a new user
+    const apiUrl = "http://127.0.0.1:8090/api/collections/users/records";
+
+    // Form data to be sent in the request body
+    const formData = {
+      email: email,
+      password: password,
+      passwordConfirm: password,
+    };
+
+    // Make a POST request using the Fetch API
+    fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((newUserData) => {
+        // Process the newly created user data
+        setEmail("")
+        setPassword("")
+        setMessage("Account has been created")
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
 
   return (
@@ -19,9 +51,9 @@ function App() {
           <input
             className="border border-gray-300 p-3 rounded  bg-gray-200"
             type="text"
-            placeholder="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <input
             className="border border-gray-300 p-3 rounded  bg-gray-200"
@@ -37,6 +69,7 @@ function App() {
           >
             Submit
           </button>
+          <div>{message}</div>
         </div>
       </div>
     </>
